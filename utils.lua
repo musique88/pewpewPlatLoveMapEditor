@@ -1,6 +1,8 @@
 function debug()
   love.graphics.print(mousePos.x,0,0)
   love.graphics.print(mousePos.y,100,0)
+  love.graphics.print(state,0,12)
+  love.graphics.print(#rectangles,100,12)
 end
 
 --/vectors
@@ -18,13 +20,25 @@ end
 rectangleO = {}
 rectangleO.__index = rectangleO
 
-function rectangleO:new(x1,y1,x2,y2)
-  local newRectangle = {x1=x1, y1=y1, x2=x2, y2=y2}
-  setmetatable(rectangleO,newRectangle)
+function rectangleO:new(x,y,w,h)
+  local newRectangle = {x=x, y=y, w=w, h=h, state="active"}
+  setmetatable(newRectangle,rectangleO)
   return newRectangle
 end
 
+function rectangleO:update()
+  if self.state=="active" then
+    self.w=mousePos.x-self.x
+    self.h=mousePos.y-self.y
+  end
+end
+
+function rectangleO:setPassive()
+  self.state="passive"
+  table.insert(rectangles,self)
+end
+
 function rectangleO:draw()
-  love.graphics.rectangle("fill", self.x1, self.y1, self.x2-self.x1, self.y2-self.y1)
+  love.graphics.rectangle("fill", self.x, self.y, self.w, self.h)
 end
 --rectangle/
